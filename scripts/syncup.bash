@@ -20,9 +20,24 @@ if git rev-parse --quiet --verify refs/heads/main >/dev/null; then
 fi
 
 git fetch --all
-git log --graph upstream/"$BRANCH" origin/"$BRANCH" "$BRANCH"
-git status
+# display
+if git remote get-url upstream &>/dev/null; then
+  git log --graph upstream/"$BRANCH" origin/"$BRANCH" "$BRANCH"
+else
+  git log --graph origin/"$BRANCH" "$BRANCH"
+fi
+# fast forward
 git checkout "$BRANCH"
-git merge --ff-only upstream/"$BRANCH"
+if git remote get-url upstream &>/dev/null; then
+  git merge --ff-only upstream/"$BRANCH"
+else
+  git merge --ff-only origin/"$BRANCH"
+fi
+# sync to origin
 git push
-git log --graph upstream/"$BRANCH" origin/"$BRANCH" "$BRANCH"
+# display
+if git remote get-url upstream &>/dev/null; then
+  git log --graph upstream/"$BRANCH" origin/"$BRANCH" "$BRANCH"
+else
+  git log --graph origin/"$BRANCH" "$BRANCH"
+fi
